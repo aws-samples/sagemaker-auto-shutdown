@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  sagemaker-auto-shutdown
+
+  Sample SAM Template for sagemaker-auto-shutdown
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 300 
+    MemorySize: 128
+
+Resources:
+  DeleteSageMakerResourcesFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: lambda/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sagemaker:ListEndpoints
+                - sagemaker:DeleteEndpoint
+                - sagemaker:ListNotebookInstances
+                - sagemaker:DeleteNotebookInstances
+              Resource: '*'
+      # TODO: Add EventBridge schedule
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  DeleteSageMakerResourcesFunction:
+    Description: "Delete SageMaker Resources Lambda Function ARN"
+    Value: !GetAtt DeleteSageMakerResourcesFunction.Arn
+  DeleteSageMakerResourcesFunctionIamRole:
+    Description: "Implicit IAM Role created for lambda function"
+    Value: !GetAtt DeleteSageMakerResourcesFunctionRole.Arn
