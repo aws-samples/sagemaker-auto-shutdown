@@ -29,7 +29,11 @@ Resources:
                 - sagemaker:ListNotebookInstances
                 - sagemaker:DeleteNotebookInstances
               Resource: '*'
-      # TODO: Add EventBridge schedule
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 20 * * ? *) # Every day at 20:00 UTC
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
