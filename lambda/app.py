@@ -40,7 +40,7 @@ def get_notebook_names(client, state):
 def delete_endpoints(client, endpoint_names):
     for name in endpoint_names:
         client.delete_endpoint(EndpointName = name)
-    return 0
+    return
 
 def stop_notebook_instances(client, notebook_names):
     for name in notebook_names:
@@ -48,20 +48,19 @@ def stop_notebook_instances(client, notebook_names):
             client.stop_notebook_instance(NotebookInstanceName = name)
         except:
             continue
-    return "Stopped notbook instances"
+    return
 
 def lambda_handler(event, context):
 
     client = boto3.client('sagemaker')
     
     endpoint_names = get_endpoint_names(client)
-    print(endpoint_names)
     
-    #delete_endpoints(client, endpoint_names)
+    delete_endpoints(client, endpoint_names)
 
     notebook_names = get_notebook_names(client, 'InService')
 
-    #stop_notebook_instances(client, notebook_names)
+    stop_notebook_instances(client, notebook_names)
 
     return {
         'statusCode': 200,
