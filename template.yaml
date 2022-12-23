@@ -28,6 +28,7 @@ Resources:
                 - sagemaker:DeleteEndpoint
                 - sagemaker:ListNotebookInstances
                 - sagemaker:DeleteNotebookInstances
+                - sagemaker:ListTags
               Resource: '*'
       Events:
         CloudWatchEvent:
