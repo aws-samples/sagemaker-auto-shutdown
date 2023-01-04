@@ -37,6 +37,7 @@ To delete the sample application that you created, use the AWS CLI. Assuming you
 
 ```bash
 aws cloudformation delete-stack --stack-name sagemaker-auto-shutdown
+```
 
 # Contributing
 See [CONTRIBUTING](CONTRIBUTING.md) for more information.
