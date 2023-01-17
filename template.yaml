@@ -27,7 +27,7 @@ Resources:
                 - sagemaker:ListEndpoints
                 - sagemaker:DeleteEndpoint
                 - sagemaker:ListNotebookInstances
-                - sagemaker:DeleteNotebookInstances
+                - sagemaker:StopNotebookInstances
                 - sagemaker:ListTags
               Resource: '*'
       Events:

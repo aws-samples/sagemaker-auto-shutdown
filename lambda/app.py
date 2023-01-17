@@ -63,7 +63,7 @@ def stop_notebook_instances(client, notebook_names):
             count += 1
         except:
             continue
-    logger.info('Deleted %s notebooks', count)
+    logger.info('Stopped %s notebooks', count)
     return
 
 def lambda_handler(event, context):
