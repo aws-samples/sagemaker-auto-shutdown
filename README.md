@@ -1,6 +1,6 @@
 # sagemaker-auto-shutdown
 
-This project creates a scheduled job that delete your SageMaker resources (endpoints and notebook instances) to save cost. It is ideal for your development accounts. It will ignore resources with certain tags (default: `env:prod`, configurable).
+This project creates a scheduled job that delete your SageMaker endpoints and shutdown notebook instances to save cost. It is ideal for your development accounts. It will ignore resources with certain tags (default: `env:prod`, configurable).
 
 ## Configuration
 

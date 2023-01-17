@@ -5,7 +5,6 @@ import logging
 TAG_TO_EXCLUDE = { 'Key': 'env', 'Value': 'prod' }
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-# logging.basicConfig(level=logging.DEBUG)
 
 def get_endpoint_names(client):
     logger.info('Getting InService endpoints')
@@ -20,12 +19,12 @@ def get_endpoint_names(client):
         name = each["EndpointName"]
         tags = client.list_tags(ResourceArn = each["EndpointArn"])
         if TAG_TO_EXCLUDE in tags['Tags']:
-            logger.info('Ignoring because of tag: %s', name)
+            logger.debug('Ignoring because of tag: %s', name)
             continue
-        logger.info('Will delete: %s', name)
+        logger.debug('Will delete: %s', name)
         endpoint_names.append(name)
     return endpoint_names
-    
+
 def get_notebook_names(client, state):
     logger.info('Getting %s notebooks', state)
     notebook_names = []
@@ -40,15 +39,15 @@ def get_notebook_names(client, state):
             name = each["NotebookInstanceName"]
             tags = client.list_tags(ResourceArn = each["NotebookInstanceArn"])
             if TAG_TO_EXCLUDE in tags['Tags']:
-                logger.info('Ignoring because of tag: %s', name)
+                logger.debug('Ignoring because of tag: %s', name)
                 continue
-            logger.info('Will delete: %s', name)
+            logger.debug('Will delete: %s', name)
             notebook_names.append(name)
     return notebook_names
-    
+
 def delete_endpoints(client, endpoint_names):
     logger.info('Deleting endpoints')
-    count = 0 
+    count = 0
     for name in endpoint_names:
         client.delete_endpoint(EndpointName = name)
         count += 1
@@ -56,8 +55,8 @@ def delete_endpoints(client, endpoint_names):
     return
 
 def stop_notebook_instances(client, notebook_names):
-    logger.info('Deleting notebooks')
-    count = 0 
+    logger.info('Stopping notebooks')
+    count = 0
     for name in notebook_names:
         try:
             client.stop_notebook_instance(NotebookInstanceName = name)
@@ -70,11 +69,11 @@ def stop_notebook_instances(client, notebook_names):
 def lambda_handler(event, context):
 
     client = boto3.client('sagemaker')
-    
+
     logger.info("Excluding resources with the tag %s", TAG_TO_EXCLUDE)
-    
+
     endpoint_names = get_endpoint_names(client)
-    
+
     delete_endpoints(client, endpoint_names)
 
     notebook_names = get_notebook_names(client, 'InService')
