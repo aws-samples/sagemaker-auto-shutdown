@@ -1,12 +1,15 @@
 # sagemaker-auto-shutdown
 
-This project creates a scheduled job that delete your SageMaker endpoints and shutdown notebook instances to save cost. It is ideal for your development accounts. It will ignore resources with certain tags (default: `env:prod`, configurable).
+This project creates a scheduled job that delete your SageMaker endpoints and shutdown notebook instances to save cost. It is ideal for your development accounts. It will ignore resources with certain tags (default: `env:prod`, configurable). Serverless endpoints are excluded because their cost are minimal when idle.
 
 ## Configuration
 
 * Schedule: set the `Resources > DeleteSageMakerResourcesFunction > Events > CloudWatchEvent > Properties > Schedule` in `template.yaml`. Default: every day at 20:00 UTC.
-* Tags to ignore: set the `TAG_TO_EXCLUDE` in `cleaner/app.py`. The application will NOT delete the resources with this tag. Default: `env:prod`
-* Log level: change the line `logger.setLevel(logging.INFO)` in `cleaner/app.py`. Default: INFO.
+* `Globals > Function > Environment > Variables` in `template.yaml`:
+  * `ENDPOINT_EXCLUDE_TAG`: SageMaker Endpoint with this tag will not be deleted.
+  * `NOTEBOOK_EXCLUDE_TAG`: SageMaker Notebook instance with this tag will not be stopped.
+  * `MAX_COUNT`: The maximum number of Endpoints and Notebooks (counted separately) that is cleaned in on run. This is to limit the blast radius in case of misconfiguration.
+  * `LOG_LEVEL`: log level. (`CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`. Default: `INFO`)
 
 ## Deploy the application
 
