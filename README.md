@@ -5,8 +5,8 @@ This project creates a scheduled job that delete your SageMaker endpoints and sh
 ## Configuration
 
 * Schedule: set the `Resources > DeleteSageMakerResourcesFunction > Events > CloudWatchEvent > Properties > Schedule` in `template.yaml`. Default: every day at 20:00 UTC.
-* Tags to ignore: set the `TAG_TO_EXCLUDE` in `lambda/app.py`. The application will NOT delete the resources with this tag. Default: `env:prod`
-* Log level: change the line `logger.setLevel(logging.INFO)` in `lambda/app.py`. Default: INFO.
+* Tags to ignore: set the `TAG_TO_EXCLUDE` in `cleaner/app.py`. The application will NOT delete the resources with this tag. Default: `env:prod`
+* Log level: change the line `logger.setLevel(logging.INFO)` in `cleaner/app.py`. Default: INFO.
 
 ## Deploy the application
 
@@ -30,6 +30,15 @@ The command will package and deploy your application to AWS, with a series of pr
 * **Confirm changes before deploy**: If set to yes, any change sets will be shown to you before execution for manual review. If set to no, the AWS SAM CLI will automatically deploy application changes.
 * **Allow SAM CLI IAM role creation**: Many AWS SAM templates, including this example, create AWS IAM roles required for the AWS Lambda function(s) included to access AWS services. By default, these are scoped down to minimum required permissions. To deploy an AWS CloudFormation stack which creates or modifies IAM roles, the `CAPABILITY_IAM` value for `capabilities` must be provided. If permission isn't provided through this prompt, to deploy this example you must explicitly pass `--capabilities CAPABILITY_IAM` to the `sam deploy` command.
 * **Save arguments to samconfig.toml**: If set to yes, your choices will be saved to a configuration file inside the project, so that in the future you can just re-run `sam deploy` without parameters to deploy changes to your application.
+
+## Tests
+Tests are defined in the tests folder in this project. Use PIP to install the test dependencies and run tests.
+
+```
+$ pip install -r tests/requirements.txt --user
+# unit test
+$ python -m pytest tests/unit -v
+```
 
 ## Cleanup
 

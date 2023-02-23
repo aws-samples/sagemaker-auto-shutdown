@@ -1,12 +1,18 @@
 import json
 import boto3
 import logging
+import os
 
-TAG_TO_EXCLUDE = { 'Key': 'env', 'Value': 'prod' }
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def get_endpoint_names(client):
+def parse_config():
+    return {
+        "ENDPOINT_EXCLUDE_TAG": json.loads(os.getenv("ENDPOINT_EXCLUDE_TAG", "{}")),
+        "NOTEBOOK_EXCLUDE_TAG": json.loads(os.getenv("NOTEBOOK_EXCLUDE_TAG", "{}"))
+    }
+
+def get_endpoint_names(client, config):
     logger.info('Getting InService endpoints')
     endpoint_names = []
     endpoints =  client.list_endpoints(
@@ -18,14 +24,14 @@ def get_endpoint_names(client):
     for each in endpoints:
         name = each["EndpointName"]
         tags = client.list_tags(ResourceArn = each["EndpointArn"])
-        if TAG_TO_EXCLUDE in tags['Tags']:
+        if config["ENDPOINT_EXCLUDE_TAG"] in tags['Tags']:
             logger.debug('Ignoring because of tag: %s', name)
             continue
         logger.debug('Will delete: %s', name)
         endpoint_names.append(name)
     return endpoint_names
 
-def get_notebook_names(client, state):
+def get_notebook_names(client, state, config):
     logger.info('Getting %s notebooks', state)
     notebook_names = []
     notebooks = client.list_notebook_instances(
@@ -38,7 +44,7 @@ def get_notebook_names(client, state):
         if each['NotebookInstanceStatus'] == state:
             name = each["NotebookInstanceName"]
             tags = client.list_tags(ResourceArn = each["NotebookInstanceArn"])
-            if TAG_TO_EXCLUDE in tags['Tags']:
+            if config["NOTEBOOK_EXCLUDE_TAG"] in tags['Tags']:
                 logger.debug('Ignoring because of tag: %s', name)
                 continue
             logger.debug('Will delete: %s', name)
@@ -69,15 +75,13 @@ def stop_notebook_instances(client, notebook_names):
 def lambda_handler(event, context):
 
     client = boto3.client('sagemaker')
+    
+    config = parse_config()
 
-    logger.info("Excluding resources with the tag %s", TAG_TO_EXCLUDE)
-
-    endpoint_names = get_endpoint_names(client)
-
+    endpoint_names = get_endpoint_names(client, config)
     delete_endpoints(client, endpoint_names)
 
-    notebook_names = get_notebook_names(client, 'InService')
-
+    notebook_names = get_notebook_names(client, 'InService', config)
     stop_notebook_instances(client, notebook_names)
 
     return {

@@ -10,12 +10,17 @@ Globals:
   Function:
     Timeout: 300 
     MemorySize: 128
+    Environment:
+      Variables:
+        ENDPOINT_EXCLUDE_TAG: "{ 'Key': 'env', 'Value': 'prod' }"
+        NOTEBOOK_EXCLUDE_TAG: "{ 'Key': 'env', 'Value': 'prod' }"
+        
 
 Resources:
-  DeleteSageMakerResourcesFunction:
+  CleanSageMakerResourcesFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: lambda/
+      CodeUri: cleaner/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:
@@ -40,9 +45,9 @@ Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  DeleteSageMakerResourcesFunction:
-    Description: "Delete SageMaker Resources Lambda Function ARN"
-    Value: !GetAtt DeleteSageMakerResourcesFunction.Arn
-  DeleteSageMakerResourcesFunctionIamRole:
+  CleanSageMakerResourcesFunction:
+    Description: "Clean SageMaker Resources Lambda Function ARN"
+    Value: !GetAtt CleanSageMakerResourcesFunction.Arn
+  CleanSageMakerResourcesFunctionIamRole:
     Description: "Implicit IAM Role created for lambda function"
-    Value: !GetAtt DeleteSageMakerResourcesFunctionRole.Arn
+    Value: !GetAtt CleanSageMakerResourcesFunctionRole.Arn
