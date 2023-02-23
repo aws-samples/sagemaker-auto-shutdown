@@ -4,12 +4,13 @@ import logging
 import os
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+logger.setLevel(os.getenv("LOG_LEVEL", "INFO").upper())
 
+print(logger.level)
 
 def try_parse_env(key):
     if key not in os.environ:
-        logger.warning("No %s set, will not exlude any resources.", key)
+        logger.warning("%s not set.", key)
     else:
         try:
             return json.loads(os.getenv(key, "null"))
@@ -21,7 +22,7 @@ def parse_config():
     return {
         "ENDPOINT_EXCLUDE_TAG": try_parse_env("ENDPOINT_EXCLUDE_TAG"),
         "NOTEBOOK_EXCLUDE_TAG": try_parse_env("NOTEBOOK_EXCLUDE_TAG"),
-        "MAX_COUNT": try_parse_env("MAX_COUNT") or 100
+        "MAX_COUNT": try_parse_env("MAX_COUNT") or 100,
     }
 
 def is_serverless_endpoint(client, endpoint_name):
