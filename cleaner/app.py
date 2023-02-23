@@ -16,14 +16,12 @@ def try_parse_env(key):
         except Exception as e:
             logger.error("Invalid syntax for %s, abort to avoid deleting resources.", key)
             raise e
-            
-        
-
 
 def parse_config():
     return {
         "ENDPOINT_EXCLUDE_TAG": try_parse_env("ENDPOINT_EXCLUDE_TAG"),
-        "NOTEBOOK_EXCLUDE_TAG": try_parse_env("NOTEBOOK_EXCLUDE_TAG")
+        "NOTEBOOK_EXCLUDE_TAG": try_parse_env("NOTEBOOK_EXCLUDE_TAG"),
+        "MAX_COUNT": try_parse_env("MAX_COUNT") or 100
     }
 
 def get_endpoint_names(client, config):
@@ -33,7 +31,7 @@ def get_endpoint_names(client, config):
         SortBy = 'CreationTime',
         SortOrder = 'Descending',
         StatusEquals = 'InService',
-        MaxResults = 100
+        MaxResults = config["MAX_COUNT"]
     )["Endpoints"]
     for each in endpoints:
         name = each["EndpointName"]
@@ -52,7 +50,7 @@ def get_notebook_names(client, state, config):
         SortBy = 'CreationTime',
         SortOrder = 'Descending',
         StatusEquals = state,
-        MaxResults = 100
+        MaxResults = config["MAX_COUNT"]
     )["NotebookInstances"]
     for each in notebooks:
         if each['NotebookInstanceStatus'] == state:

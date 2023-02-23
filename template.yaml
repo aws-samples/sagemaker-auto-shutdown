@@ -12,8 +12,9 @@ Globals:
     MemorySize: 128
     Environment:
       Variables:
-        ENDPOINT_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }'
-        NOTEBOOK_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }'
+        ENDPOINT_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }' # Endpoint with this tag will not be deleted.
+        NOTEBOOK_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }' # Notebook with this tag will not be stopped.
+        MAX_COUNT: 100 # Max number of endpoint or notebook to be cleaned in one run. This is to reduce the blast radius in case of misconfiguration.
 
 Resources:
   CleanSageMakerResourcesFunction:
