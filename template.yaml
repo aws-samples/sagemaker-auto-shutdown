@@ -12,9 +12,8 @@ Globals:
     MemorySize: 128
     Environment:
       Variables:
-        ENDPOINT_EXCLUDE_TAG: "{ 'Key': 'env', 'Value': 'prod' }"
-        NOTEBOOK_EXCLUDE_TAG: "{ 'Key': 'env', 'Value': 'prod' }"
-        
+        ENDPOINT_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }'
+        NOTEBOOK_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }'
 
 Resources:
   CleanSageMakerResourcesFunction:

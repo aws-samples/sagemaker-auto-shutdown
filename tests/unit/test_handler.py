@@ -21,5 +21,16 @@ def test_config_parser_has_default():
     
     config = app.parse_config()
     
-    assert config["ENDPOINT_EXCLUDE_TAG"] ==  {}
-    assert config["NOTEBOOK_EXCLUDE_TAG"] ==  {}
+    assert config["ENDPOINT_EXCLUDE_TAG"] == None 
+    assert config["NOTEBOOK_EXCLUDE_TAG"] == None
+    
+def test_try_parse_env():
+    os.environ["ENDPOINT_EXCLUDE_TAG"] = '{ "Key": "env", "Value": "prod" }'
+    oneEnv = app.try_parse_env("ENDPOINT_EXCLUDE_TAG")
+    assert oneEnv == { 'Key': 'env', 'Value': 'prod' }
+    
+def test_try_parse_env_invalid_json():
+    
+    os.environ["ENDPOINT_EXCLUDE_TAG"] = "MAL_FORMED_JSON:{}"
+    with pytest.raises(Exception):
+        oneEnv = app.try_parse_env("ENDPOINT_EXCLUDE_TAG")
