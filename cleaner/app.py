@@ -24,6 +24,12 @@ def parse_config():
         "MAX_COUNT": try_parse_env("MAX_COUNT") or 100
     }
 
+def is_serverless_endpoint(client, endpoint_name):
+    endpoint = client.describe_endpoint(EndpointName = endpoint_name)
+    endpoint_config = client.describe_endpoint_config(EndpointConfigName = endpoint["EndpointConfigName"])
+    product_variants = endpoint_config["ProductionVariants"]
+    return "ServerlessConfig" in product_variants[0]
+
 def get_endpoint_names(client, config):
     logger.info('Getting InService endpoints')
     endpoint_names = []
@@ -33,11 +39,15 @@ def get_endpoint_names(client, config):
         StatusEquals = 'InService',
         MaxResults = config["MAX_COUNT"]
     )["Endpoints"]
+    
     for each in endpoints:
         name = each["EndpointName"]
         tags = client.list_tags(ResourceArn = each["EndpointArn"])
         if config["ENDPOINT_EXCLUDE_TAG"] in tags['Tags']:
             logger.debug('Ignoring because of tag: %s', name)
+            continue
+        if is_serverless_endpoint(client, name):
+            logger.debug('Ignoring because of serverless endpoint: %s', name)
             continue
         logger.debug('Will delete: %s', name)
         endpoint_names.append(name)

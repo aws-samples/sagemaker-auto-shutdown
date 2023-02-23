@@ -37,3 +37,24 @@ def test_try_parse_env_invalid_json():
     os.environ["ENDPOINT_EXCLUDE_TAG"] = "MAL_FORMED_JSON:{}"
     with pytest.raises(Exception):
         oneEnv = app.try_parse_env("ENDPOINT_EXCLUDE_TAG")
+        
+def test_is_serverless():
+    class MockSageMakerClient:
+        def describe_endpoint(*args, **kwargs):
+            assert kwargs["EndpointName"] == "mock-endpoint"
+            return {
+                "EndpointConfigName": "mock-endpoint-config"
+            }
+        def describe_endpoint_config(*args, **kwargs):
+            assert kwargs["EndpointConfigName"] == "mock-endpoint-config"
+            return {
+                "ProductionVariants": [
+                    {
+                        "VariantName": "mock-variant-name",
+                        "ServerlessConfig": {}
+                    }
+                ]
+            }
+                        
+    client = MockSageMakerClient()
+    assert app.is_serverless_endpoint(client, "mock-endpoint") == True
