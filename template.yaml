@@ -5,6 +5,28 @@ Description: >
 
   Sample SAM Template for sagemaker-auto-shutdown
 
+Parameters:
+  EndpointExcludeTagKey:
+    Type: String
+    Default: env
+    AllowedPattern: '^([\p{L}\p{Z}\p{N}_.:/=+\-@]*)$'
+    Description: 'Endpoint with this tag will not be deleted.'
+  EndpointExcludeTagValue:
+    Type: String
+    Default: prod
+    AllowedPattern: '^([\p{L}\p{Z}\p{N}_.:/=+\-@]*)$'
+    Description: 'Endpoint with this tag will not be deleted.'
+  NotebookExcludeTagKey:
+    Type: String
+    Default: env
+    AllowedPattern: '^([\p{L}\p{Z}\p{N}_.:/=+\-@]*)$'
+    Description: 'Notebook with this tag will not be stopped.'
+  NotebookExcludeTagValue:
+    Type: String
+    Default: prod
+    AllowedPattern: '^([\p{L}\p{Z}\p{N}_.:/=+\-@]*)$'
+    Description: 'Notebook with this tag will not be stopped.'
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -12,8 +34,8 @@ Globals:
     MemorySize: 128
     Environment:
       Variables:
-        ENDPOINT_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }' # Endpoint with this tag will not be deleted.
-        NOTEBOOK_EXCLUDE_TAG: '{ "Key": "env", "Value": "prod" }' # Notebook with this tag will not be stopped.
+        ENDPOINT_EXCLUDE_TAG: !Sub '{ "Key": "${EndpointExcludeTagKey}", "Value": "${EndpointExcludeTagValue}" }'
+        NOTEBOOK_EXCLUDE_TAG: !Sub '{ "Key": "${NotebookExcludeTagKey}", "Value": "${NotebookExcludeTagValue}" }'
         MAX_COUNT: 100 # Max number of endpoint or notebook to be cleaned in one run. This is to reduce the blast radius in case of misconfiguration.
         LOG_LEVEL: INFO
 
@@ -33,11 +55,16 @@ Resources:
                 - sagemaker:ListEndpoints
                 - sagemaker:DescribeEndpoint
                 - sagemaker:DescribeEndpointConfig
-                - sagemaker:DeleteEndpoint
                 - sagemaker:ListNotebookInstances
-                - sagemaker:StopNotebookInstances
                 - sagemaker:ListTags
               Resource: '*'
+         - Statement:
+             - Effect: Allow
+               Action:
+                 - sagemaker:DeleteEndpoint
+                 - sagemaker:StopNotebookInstance
+               Resource: '*'
+                  
       Events:
         CloudWatchEvent:
           Type: Schedule
