@@ -5,9 +5,12 @@ This project creates a scheduled job that delete your SageMaker endpoints and sh
 ## Configuration
 
 * Schedule: set the `Resources > DeleteSageMakerResourcesFunction > Events > CloudWatchEvent > Properties > Schedule` in `template.yaml`. Default: every day at 20:00 UTC.
+* `Parameter` in `template.yaml`:
+  * EndpointExcludeTagKey: Endpoint with this tag will not be deleted.
+  * EndpointExcludeTagValue: Endpoint with this tag will not be deleted.
+  * NotebookExcludeTagKey: Notebook with this tag will not be stopped.
+  * NotebookExcludeTagValue: Notebook with this tag will not be stopped.
 * `Globals > Function > Environment > Variables` in `template.yaml`:
-  * `ENDPOINT_EXCLUDE_TAG`: SageMaker Endpoint with this tag will not be deleted.
-  * `NOTEBOOK_EXCLUDE_TAG`: SageMaker Notebook instance with this tag will not be stopped.
   * `MAX_COUNT`: The maximum number of Endpoints and Notebooks (counted separately) that is cleaned in on run. This is to limit the blast radius in case of misconfiguration.
   * `LOG_LEVEL`: log level. (`CRITICAL`, `ERROR`, `WARNING`, `INFO`, `DEBUG`. Default: `INFO`)
 
