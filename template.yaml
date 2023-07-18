@@ -36,7 +36,7 @@ Globals:
       Variables:
         ENDPOINT_EXCLUDE_TAG: !Sub '{ "Key": "${EndpointExcludeTagKey}", "Value": "${EndpointExcludeTagValue}" }'
         NOTEBOOK_EXCLUDE_TAG: !Sub '{ "Key": "${NotebookExcludeTagKey}", "Value": "${NotebookExcludeTagValue}" }'
-        ENDPOINT_SPEC: '{ "EndpointConfigName": "Example-Endpoint-Config", "EndpointName": "Example-Endpoint" }'
+        ENDPOINT_SPEC: '[{ "EndpointConfigName": "Example-Endpoint-Config", "EndpointName": "Example-Endpoint"}]'
         MAX_COUNT: 100 # Max number of endpoint or notebook to be cleaned in one run. This is to reduce the blast radius in case of misconfiguration.
         LOG_LEVEL: INFO
 
