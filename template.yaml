@@ -36,6 +36,7 @@ Globals:
       Variables:
         ENDPOINT_EXCLUDE_TAG: !Sub '{ "Key": "${EndpointExcludeTagKey}", "Value": "${EndpointExcludeTagValue}" }'
         NOTEBOOK_EXCLUDE_TAG: !Sub '{ "Key": "${NotebookExcludeTagKey}", "Value": "${NotebookExcludeTagValue}" }'
+        ENDPOINT_SPEC: '{ "EndpointConfigName": "Example-Endpoint-Config", "EndpointName": "Example-Endpoint" }'
         MAX_COUNT: 100 # Max number of endpoint or notebook to be cleaned in one run. This is to reduce the blast radius in case of misconfiguration.
         LOG_LEVEL: INFO
 
@@ -70,6 +71,26 @@ Resources:
           Type: Schedule
           Properties:
             Schedule: cron(0 20 * * ? *) # Every day at 20:00 UTC
+            
+  CreateSageMakerEndpointFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: creater/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - sagemaker:CreateEndpoint
+              Resource: '*'
+      Events:
+        CloudWatchEvent:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 7 * * ? *) # Every day at 7:00 UTC
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
